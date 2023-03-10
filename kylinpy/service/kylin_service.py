@@ -92,7 +92,7 @@ class KylinService(ServiceInterface):
         self.client = client
         self.project = project
 
-    def query(self, sql, limit=50000, offset=0, acceptPartial=False, **kwargs):
+    def query(self, sql, limit=50000, offset=0, acceptPartial=False, cubeName = '', **kwargs):
         json_data = {
             'acceptPartial': acceptPartial,
             'limit': limit,
@@ -100,6 +100,13 @@ class KylinService(ServiceInterface):
             'project': self.project,
             'sql': sql,
         }
+        if len(cubeName) > 0:
+            cube_dict = {
+                'backdoorToggles': {
+                    'DEBUG_TOGGLE_HIT_CUBE': cubeName
+                } 
+            }
+            json_data.update(cube_dict)
         kwargs.setdefault('json', json_data)
         try:
             response = self.api.query(self.client, '/query', **kwargs)
